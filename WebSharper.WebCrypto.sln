@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35825.156 d17.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "WebSharper.WebCrypto", "WebSharper.WebCrypto\WebSharper.WebCrypto.fsproj", "{8D3B0E35-7E68-4B34-9D63-086672171D3A}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "WebSharper.WebCrypto.Sample", "WebSharper.WebCrypto.Sample\WebSharper.WebCrypto.Sample.fsproj", "{B37F526A-5D42-4A29-A72B-D3AE87A8597A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8D3B0E35-7E68-4B34-9D63-086672171D3A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D3B0E35-7E68-4B34-9D63-086672171D3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D3B0E35-7E68-4B34-9D63-086672171D3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D3B0E35-7E68-4B34-9D63-086672171D3A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B37F526A-5D42-4A29-A72B-D3AE87A8597A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B37F526A-5D42-4A29-A72B-D3AE87A8597A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B37F526A-5D42-4A29-A72B-D3AE87A8597A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B37F526A-5D42-4A29-A72B-D3AE87A8597A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5934996C-C725-44BF-98AD-9E1C175885EF}
+	EndGlobalSection
+EndGlobal
