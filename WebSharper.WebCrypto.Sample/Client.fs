@@ -15,15 +15,16 @@ module Client =
 
     let passwordInput = Var.Create ""
     let hashedPassword = Var.Create "Waiting for input..."
-    let window = As<Window>(JS.Window)
-        
+
+    let crypto = JS.Window.Crypto |> As<Crypto>
+    
     let hashPassword () =
         promise {
             let password = passwordInput.Value
             let encoder = JS.Eval("new TextEncoder()")
             let data = encoder?encode(password) |> As<Uint8Array>
 
-            let! hashBuffer = window.Crypto.Subtle.Digest("SHA-256", data)
+            let! hashBuffer = crypto.Subtle.Digest("SHA-256", data)
 
             let hashArray = Uint8Array(hashBuffer)
             printfn($"{hashArray}")

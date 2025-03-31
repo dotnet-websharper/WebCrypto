@@ -78,8 +78,9 @@ module Client =
     let passwordInput = Var.Create ""
     // Variable to store the resulting hashed password
     let hashedPassword = Var.Create "Waiting for input..."
-    // Access the window object to interact with Web Crypto API
-    let window = As<Window>(JS.Window)
+
+    // Access the Crypto object to interact with Web Crypto API
+    let crypto = JS.Window.Crypto |> As<Crypto>
 
     // Function to hash a password using SHA-256
     let hashPassword () =
@@ -90,7 +91,7 @@ module Client =
             let data = encoder?encode(password) |> As<Uint8Array>
 
             // Compute SHA-256 hash of the password
-            let! hashBuffer = window.Crypto.Subtle.Digest("SHA-256", data)
+            let! hashBuffer = crypto.Subtle.Digest("SHA-256", data)
 
             // Convert the hash buffer into a Uint8Array
             let hashArray = Uint8Array(hashBuffer)

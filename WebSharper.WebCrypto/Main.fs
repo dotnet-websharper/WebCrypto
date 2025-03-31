@@ -235,23 +235,9 @@ module Definition =
             "randomUUID" => T<unit> ^-> T<string>
         ]
 
-    let Window =
-        Class "Window"
-        |+> Instance [
-            "crypto" =? Crypto
-        ]
-
-    let WorkerGlobalScope =
-        Class "WorkerGlobalScope"
-        |+> Instance [
-            "crypto" =? Crypto
-        ]
-
     let Assembly =
         Assembly [
             Namespace "WebSharper.WebCrypto" [
-                WorkerGlobalScope
-                Window
                 Crypto
                 SubtleCrypto
                 RsaPssParams
