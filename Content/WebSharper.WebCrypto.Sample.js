@@ -29,7 +29,7 @@ function hashPassword(){
   return new Promise((_2) => {
     const password=passwordInput().Get();
     const data=eval("new TextEncoder()").encode(password);
-    let _3=window_1().crypto.subtle.digest("SHA-256", data).then((d) => {
+    let _3=crypto().subtle.digest("SHA-256", data).then((d) => {
       const hashArray_1=new Uint8Array(d);
       (((_4) => _4(String(hashArray_1)))((s) => {
         console.log(s);
@@ -41,8 +41,8 @@ function hashPassword(){
     _2(_3);
   });
 }
-function window_1(){
-  return _c.window;
+function crypto(){
+  return _c.crypto;
 }
 function FailWith(msg){
   throw new Error(msg);
@@ -373,13 +373,13 @@ let _c=Lazy((_i) => class $StartupCode_Client {
   static {
     _c=_i(this);
   }
-  static window;
+  static crypto;
   static hashedPassword;
   static passwordInput;
   static {
     this.passwordInput=_c_1.Create_1("");
     this.hashedPassword=_c_1.Create_1("Waiting for input...");
-    this.window=globalThis;
+    this.crypto=globalThis.crypto;
   }
 });
 class VarStr extends TemplateHole {
