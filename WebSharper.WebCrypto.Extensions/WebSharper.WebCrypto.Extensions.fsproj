@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
@@ -10,16 +11,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="WebSharper" Version="8.0.0.540" />    
-    <PackageReference Include="WebSharper.FSharp" Version="8.0.0.540" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\WebSharper.WebCrypto\WebSharper.WebCrypto.fsproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Update="FSharp.Core" Version="9.0.300-beta.25124.4" />
-  </ItemGroup>
+  <Import Project="..\.paket\Paket.Restore.targets" />
 
 </Project>

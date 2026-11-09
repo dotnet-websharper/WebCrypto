@@ -1,0 +1,22 @@
+type file
+id WebSharper.WebCrypto
+authors
+    IntelliFactory
+owners
+    IntelliFactory
+repositoryType git
+repositoryUrl https://github.com/dotnet-websharper/WebCrypto/
+licenseUrl https://github.com/dotnet-websharper/WebCrypto/blob/main/LICENSE.md
+iconUrl https://github.com/dotnet-websharper/core/raw/websharper50/tools/WebSharper.png
+projectUrl https://github.com/dotnet-websharper/WebCrypto
+description
+    WebSharper bindings for the Web Crypto API
+tags
+    Web JavaScript F# C#
+files
+    ../WebSharper.WebCrypto.Extensions/bin/Release/netstandard2.0/WebSharper.WebCrypto.Extensions.dll ==> lib/netstandard2.0
+    ../WebSharper.WebCrypto.Extensions/bin/Release/netstandard2.0/WebSharper.WebCrypto.Extensions.xml ==> lib/netstandard2.0
+    ../WebSharper.WebCrypto/bin/Release/netstandard2.0/WebSharper.WebCrypto.dll ==> lib/netstandard2.0
+    ../WebSharper.WebCrypto/bin/Release/netstandard2.0/WebSharper.WebCrypto.xml ==> lib/netstandard2.0
+dependencies
+        WebSharper ~> LOCKEDVERSION:[3]
