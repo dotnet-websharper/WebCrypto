@@ -1,143 +1,191 @@
-# WebSharper WebCrypto API Binding
+# WebSharper.WebCrypto
 
-This repository provides an F# [WebSharper](https://websharper.com/) binding for the [WebCrypto API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Crypto_API), enabling WebSharper applications to perform cryptographic operations such as encryption, decryption, hashing, and key generation.
+[![NuGet](https://img.shields.io/badge/nuget-not%20published-lightgrey)](https://github.com/dotnet-websharper/WebCrypto)
 
-## Repository Structure
+WebSharper bindings for the [Web Crypto API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Crypto_API) —
+hashing, secure random values, key generation and authenticated encryption from F# and C# web apps.
 
-The repository consists of two main projects:
+`SubtleCrypto` is only available in [secure contexts](https://developer.mozilla.org/en-US/docs/Web/Security/Defenses/Secure_Contexts)
+(HTTPS or localhost).
 
-1. **Binding Project**:
+This repository contains:
 
-   - Contains the F# WebSharper binding for the WebCrypto API.
+| Project | Purpose |
+| --- | --- |
+| `WebSharper.WebCrypto` | The binding: WIG definitions for `Crypto`, `SubtleCrypto`, `CryptoKey`, `CryptoKeyPair`, `JsonWebKey`, and the algorithm parameter dictionaries (AES, EC/ECDH/ECDSA, HKDF, HMAC, PBKDF2, RSA-OAEP, RSA-PSS). |
+| `WebSharper.WebCrypto.Extensions` | `[<Inline>]` accessors: `WindowCrypto()` (`window.crypto`) and `WorkerCrypto()` (`self.crypto`). |
+| `WebSharper.WebCrypto.Sample` | An ASP.NET Core SPA that demonstrates SHA-256, AES-GCM encryption/decryption, random values and UUIDs. |
 
-2. **Sample Project**:
-   - Demonstrates how to use the WebCrypto API with WebSharper syntax.
-   - Includes a GitHub Pages demo: [View Demo](https://dotnet-websharper.github.io/WebCrypto/).
+## Live demos
+
+**Try it live:** [Open the sample in your browser](https://dotnet-websharper.github.io/WebCrypto/)
+
+![Web Crypto API sample](docs/sample.png)
+
+The sample doubles as the binding's [test case](#running-the-sample): it hashes text with `digest()`, generates and round-trips an AES-GCM-256 key with `generateKey()`/`exportKey()`/`importKey()`, encrypts and decrypts with `encrypt()`/`decrypt()`, and fills arrays with `getRandomValues()` and `randomUUID()`.
+
+- **Sample (this repository):** <https://dotnet-websharper.github.io/WebCrypto/>
+- **Source repository:** <https://github.com/dotnet-websharper/WebCrypto>
+- **WebSharper bindings:** <https://websharper.com/bindings>
+
+## Features
+
+- `Crypto.randomUUID()`, `Crypto.getRandomValues()`, and `Crypto.subtle`.
+- `SubtleCrypto.digest()`, `encrypt()`, `decrypt()`, `sign()`, `verify()`.
+- `SubtleCrypto.generateKey()`, `deriveKey()`, `deriveBits()`, `importKey()`, `exportKey()`, `wrapKey()`, `unwrapKey()`.
+- Algorithm dictionaries with correctly required/optional fields: `AesCbcParams`, `AesCtrParams`, `AesGcmParams`, `AesKeyGenParams`, `EcKeyGenParams`, `EcKeyImportParams`, `EcdhKeyDeriveParams`, `EcdsaParams`, `HkdfParams`, `HmacImportParams`, `HmacKeyGenParams`, `Pbkdf2Params`, `RsaHashedImportParams`, `RsaHashedKeyGenParams`, `RsaOaepParams`, `RsaPssParams`.
+- `CryptoKey` (`type`, `extractable`, `algorithm`, `usages`), `CryptoKeyPair`, and `JsonWebKey`.
+- `KeyUsages`, `KeyType`, and `Format` enums.
 
 ## Installation
 
-To use this package in your WebSharper project, add the NuGet package:
+The binding is not currently published to NuGet. Reference the projects from source:
 
 ```bash
-   dotnet add package WebSharper.WebCrypto
+git clone https://github.com/dotnet-websharper/WebCrypto.git
 ```
 
-## Building
+```xml
+<ItemGroup>
+  <ProjectReference Include="path/to/WebSharper.WebCrypto/WebSharper.WebCrypto.fsproj" />
+  <ProjectReference Include="path/to/WebSharper.WebCrypto.Extensions/WebSharper.WebCrypto.Extensions.fsproj" />
+</ItemGroup>
+```
 
-### Prerequisites
-
-- [.NET SDK](https://dotnet.microsoft.com/download) installed on your machine.
-
-### Steps
-
-1. Clone the repository:
-
-   ```bash
-   git clone https://github.com/dotnet-websharper/WebCrypto.git
-   cd WebCrypto
-   ```
-
-2. Build the Binding Project:
-
-   ```bash
-   dotnet build WebSharper.WebCrypto/WebSharper.WebCrypto.fsproj
-   ```
-
-3. Build and Run the Sample Project:
-
-   ```bash
-   cd WebSharper.WebCrypto.Sample
-   dotnet build
-   dotnet run
-   ```
-
-4. Open the hosted demo to see the Sample project in action:
-   [https://dotnet-websharper.github.io/WebCrypto/](https://dotnet-websharper.github.io/WebCrypto/)
-
-## Example Usage
-
-Below is an example of how to use the WebCrypto API in a WebSharper project:
+## Usage
 
 ```fsharp
-namespace WebSharper.WebCrypto.Sample
+namespace WebSharper.WebCrypto.Demo
 
 open WebSharper
 open WebSharper.JavaScript
-open WebSharper.UI
-open WebSharper.UI.Client
-open WebSharper.UI.Templating
 open WebSharper.WebCrypto
 
 [<JavaScript>]
-module Client =
-    // The templates are loaded from the DOM, so you just can edit index.html
-    // and refresh your browser, no need to recompile unless you add or remove holes.
-    type IndexTemplate = Template<"wwwroot/index.html", ClientLoad.FromDocument>
+module Demo =
+    let crypto = WindowCrypto()
 
-    // Variable to store user input password
-    let passwordInput = Var.Create ""
-    // Variable to store the resulting hashed password
-    let hashedPassword = Var.Create "Waiting for input..."
+    let strToBuf (s: string) : Uint8Array =
+        let enc : obj = JS.Eval "new TextEncoder()"
+        enc?encode(s) |> As<Uint8Array>
 
-    // Access the Crypto object to interact with Web Crypto API
-    let crypto = JS.Window.Crypto |> As<Crypto>
+    let toHex (buffer: ArrayBuffer) : string =
+        let bytes = Uint8Array(buffer)
+        Seq.init bytes.Length (fun i -> bytes.Get(i))
+        |> Seq.map (fun b -> sprintf "%02x" b)
+        |> String.concat ""
 
-    // Function to hash a password using SHA-256
-    let hashPassword () =
+    let sha256 (text: string) =
         promise {
-            let password = passwordInput.Value
-            let encoder = JS.Eval("new TextEncoder()")
-            // Encode the password into a Uint8Array
-            let data = encoder?encode(password) |> As<Uint8Array>
-
-            // Compute SHA-256 hash of the password
-            let! hashBuffer = crypto.Subtle.Digest("SHA-256", data)
-
-            // Convert the hash buffer into a Uint8Array
-            let hashArray = Uint8Array(hashBuffer)
-            printfn($"{hashArray}")
-
-            // Convert the buffer to a hexadecimal string
-            let hexString =
-                Seq.init hashArray.Length (fun i -> hashArray.Get(i))
-                |> Seq.map (fun byte -> sprintf "%02x" byte)  // Convert to 2-char hex
-                |> String.concat ""
-
-            // Update the UI with the hashed password
-            hashedPassword.Value <- $"Hashed: {hexString}"
+            let! digest = crypto.Subtle.Digest("SHA-256", strToBuf text)
+            return toHex digest
         }
 
-    [<SPAEntryPoint>]
-    let Main () =
+    let encryptAndDecrypt (text: string) =
+        promise {
+            let usages = [| KeyUsages.Encrypt; KeyUsages.Decrypt |]
 
-        IndexTemplate.Main()
-            // Bind user input to password variable
-            .Password(passwordInput)
-            // Bind the hashing function to the button click
-            .HashPassword(fun _ ->
-                async {
-                    do! hashPassword() |> Promise.AsAsync
-                }
-                |> Async.StartImmediate
-            )
-            // Display the hashed password in the UI
-            .HashedPassword(hashedPassword.V)
-            .Doc()
-        |> Doc.RunById "main"
+            // generateKey() returns a CryptoKey for symmetric algorithms.
+            let! generated =
+                crypto.Subtle.GenerateKey(
+                    AesKeyGenParams(name = "AES-GCM", length = 256),
+                    true,
+                    usages)
+            let key = generated |> As<CryptoKey>
+
+            // exportKey()/importKey() round-trip the raw key bytes.
+            let! rawKey = crypto.Subtle.ExportKey(Format.Raw, key)
+            let! imported =
+                crypto.Subtle.ImportKey(
+                    Format.Raw,
+                    rawKey |> As<ArrayBuffer>,
+                    AesKeyGenParams(name = "AES-GCM", length = 256),
+                    true,
+                    usages)
+            let importedKey = imported |> As<CryptoKey>
+
+            let iv = crypto.GetRandomValues(Uint8Array(12)) |> As<Uint8Array>
+            let! encrypted =
+                crypto.Subtle.Encrypt(
+                    AesGcmParams(name = "AES-GCM", iv = iv),
+                    importedKey,
+                    strToBuf text)
+            let! plain =
+                crypto.Subtle.Decrypt(
+                    AesGcmParams(name = "AES-GCM", iv = iv),
+                    importedKey,
+                    encrypted)
+            return (Uint8Array(encrypted).Length, plain)
+        }
+
+    let newUuid () = crypto.RandomUUID()
 ```
 
-This example demonstrates how to hash a user-entered password using SHA-256 with the WebCrypto API in WebSharper.
+Note that `generateKey()`, `importKey()`, `exportKey()` and `unwrapKey()` can return either a `CryptoKey` or a `CryptoKeyPair` (for asymmetric algorithms), so the binding types their result as `Promise<obj>`; cast it to the shape you expect (`As<CryptoKey>` or `As<CryptoKeyPair>`).
 
-## Important Considerations
+## Running the sample
 
-- **Security Best Practices**: Always use secure key storage and avoid exposing cryptographic keys in client-side code.
-- **Browser Support**: Some older browsers may not fully support the WebCrypto API; check [MDN WebCrypto API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Crypto_API) for compatibility details.
-- **Performance**: The WebCrypto API is optimized for performance and is significantly faster than JavaScript-based cryptographic libraries.
+Build the sample in Release and serve its static output:
+
+```bash
+dotnet build WebSharper.WebCrypto.Sample/WebSharper.WebCrypto.Sample.fsproj -c Release
+python3 -m http.server -d WebSharper.WebCrypto.Sample/wwwroot 5615
+```
+
+Open <http://localhost:5615/>. Localhost counts as a secure context, so `SubtleCrypto` is available.
+
+Alternatively, run the ASP.NET Core host:
+
+```bash
+dotnet run --project WebSharper.WebCrypto.Sample
+```
+
+## Building from source
+
+### Prerequisites
+
+- [.NET SDK 10](https://dotnet.microsoft.com/download) or later.
+
+### Build
+
+```bash
+dotnet tool restore
+dotnet paket install
+dotnet build WebSharper.WebCrypto.sln -c Release
+```
+
+The binding projects target `netstandard2.0`; the sample targets `net10.0`.
+
+## Deployment
+
+Pushing to `main` triggers `.github/workflows/ghpages.yml`, which builds the sample in Release and publishes
+`WebSharper.WebCrypto.Sample/wwwroot` to the `gh-pages` branch.
+
+## Repository layout
+
+```
+WebSharper.WebCrypto/              # binding (WIG definitions)
+  Main.fs
+WebSharper.WebCrypto.Extensions/   # [<Inline>] client extensions
+  Library.fs
+WebSharper.WebCrypto.Sample/       # ASP.NET Core SPA demo
+  Client.fs
+  Startup.fs
+  wwwroot/
+    index.html
+    site.css
+docs/sample.png                    # screenshot used in this README
+.github/workflows/ghpages.yml      # build + deploy the sample to GitHub Pages
+```
+
+## Notes on the API
+
+- **Secure context:** `crypto.subtle` is only exposed in secure contexts. Serve the page over HTTPS or from localhost.
+- **Accessing the `Crypto` object:** core `WebSharper.JavaScript` already exposes a `Window.Crypto` property typed as `obj`, so this binding provides the `WindowCrypto()` and `WorkerCrypto()` module functions instead of a shadowed extension member.
+- **Required algorithm fields:** the algorithm dictionaries follow the spec — for example `AesGcmParams` requires `name` and `iv`, while `additionalData` and `tagLength` are optional. Required fields are constructor arguments; optional fields are settable properties.
+- **Union results:** `generateKey()`, `importKey()`, `exportKey()` and `unwrapKey()` are typed as `Promise<obj>` because their result is a union (`CryptoKey`, `CryptoKeyPair`, `ArrayBuffer` or `JsonWebKey`); cast with `As<...>`.
+- **`getRandomValues()`:** the spec limits a single call to 65,536 bytes, and it must not be used to generate key material — use `generateKey()` for that.
 
 ## License
 
-This project is licensed under the Apache License 2.0. See the [LICENSE](LICENSE.md) file for details.
-
-## Acknowledgments
-
-Special thanks to the WebSharper team and contributors for their efforts in enabling seamless integration of APIs into F# projects.
+Apache 2.0 — see [LICENSE.md](LICENSE.md).
