@@ -43,12 +43,12 @@ jobs:
         run: dotnet paket restore
 
       - name: Build sample in Release
-        run: dotnet build WebSharper.Clipboard.Sample/WebSharper.Clipboard.Sample.fsproj --configuration Release
+        run: dotnet build WebSharper.WebCrypto.Sample/WebSharper.WebCrypto.Sample.fsproj --configuration Release
 
       - name: Prepare deployment
         run: |
           mkdir -p dist
-          cp -r WebSharper.Clipboard.Sample/wwwroot/. dist/
+          cp -r WebSharper.WebCrypto.Sample/wwwroot/. dist/
 
       - name: Deploy 🚀
         uses: peaceiris/actions-gh-pages@v3
