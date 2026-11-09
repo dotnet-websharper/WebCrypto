@@ -7,10 +7,6 @@
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%234f46e5'/%3E%3Cpath d='M8 3a3 3 0 0 0-3 3v1H4.5A1.5 1.5 0 0 0 3 8.5v4A1.5 1.5 0 0 0 4.5 14h7A1.5 1.5 0 0 0 13 12.5v-4A1.5 1.5 0 0 0 11.5 7H11V6a3 3 0 0 0-3-3Zm0 1.5A1.5 1.5 0 0 1 9.5 6v1h-3V6A1.5 1.5 0 0 1 8 4.5Z' fill='white'/%3E%3C/svg%3E" />
     <link rel="stylesheet" type="text/css" href="Content/WebSharper.WebCrypto.Sample.css" />
     <link rel="stylesheet" type="text/css" href="site.css" />
-    <style>
-        /* Don't show the not-yet-loaded templates */
-        [ws-template], [ws-children-template] { display: none; }
-    </style>
     <script type="module" src="Content/WebSharper.WebCrypto.Sample.head.js"></script>
 </head>
 <body>
@@ -24,46 +20,44 @@
             </p>
         </header>
 
-        <div id="main" ws-children-template="Main">
-            <section class="card">
-                <h2>SHA-256 digest</h2>
-                <p class="hint">Uses <code>SubtleCrypto.digest()</code> on the UTF-8 bytes of the text below.</p>
-                <textarea id="textInput" rows="2" placeholder="Type something here..." ws-var="textInput"></textarea>
-                <div class="actions">
-                    <button class="btn btn-primary" ws-onclick="hashText">Hash</button>
-                    <button class="btn" ws-onclick="randomValues">Random values</button>
-                </div>
-                <pre class="preview">${hashResult}</pre>
-                <p class="event">${randomResult}</p>
-            </section>
+        <section class="card">
+            <h2>SHA-256 digest</h2>
+            <p class="hint">Uses <code>SubtleCrypto.digest()</code> on the UTF-8 bytes of the text below.</p>
+            <textarea id="textInput" rows="2" placeholder="Type something here..." ws-var="textInput"></textarea>
+            <div class="actions">
+                <button class="btn btn-primary" ws-onclick="hashText">Hash</button>
+                <button class="btn" ws-onclick="randomValues">Random values</button>
+            </div>
+            <pre class="preview">${hashResult}</pre>
+            <p class="event">${randomResult}</p>
+        </section>
 
-            <section class="card">
-                <h2>AES-GCM encrypt / decrypt</h2>
-                <p class="hint">
-                    Generates an AES-GCM-256 key with <code>generateKey()</code>,
-                    round-trips it through <code>exportKey()</code> / <code>importKey()</code>,
-                    then encrypts and decrypts the text above.
-                </p>
-                <div class="actions">
-                    <button class="btn btn-primary" ws-onclick="encryptText">Encrypt</button>
-                    <button class="btn" ws-onclick="decryptText">Decrypt</button>
-                </div>
-                <pre class="preview">${ciphertext}</pre>
-                <pre class="preview">${decrypted}</pre>
-            </section>
+        <section class="card">
+            <h2>AES-GCM encrypt / decrypt</h2>
+            <p class="hint">
+                Generates an AES-GCM-256 key with <code>generateKey()</code>,
+                round-trips it through <code>exportKey()</code> / <code>importKey()</code>,
+                then encrypts and decrypts the text above.
+            </p>
+            <div class="actions">
+                <button class="btn btn-primary" ws-onclick="encryptText">Encrypt</button>
+                <button class="btn" ws-onclick="decryptText">Decrypt</button>
+            </div>
+            <pre class="preview">${ciphertext}</pre>
+            <pre class="preview">${decrypted}</pre>
+        </section>
 
-            <section class="card">
-                <h2>Random UUID</h2>
-                <p class="hint">Uses <code>Crypto.randomUUID()</code>.</p>
-                <div class="actions">
-                    <button class="btn" ws-onclick="newUuid">Generate UUID</button>
-                </div>
-                <pre class="preview">${uuid}</pre>
-            </section>
+        <section class="card">
+            <h2>Random UUID</h2>
+            <p class="hint">Uses <code>Crypto.randomUUID()</code>.</p>
+            <div class="actions">
+                <button class="btn" ws-onclick="newUuid">Generate UUID</button>
+            </div>
+            <pre class="preview">${uuid}</pre>
+        </section>
 
-            <p class="status" role="status">${status}</p>
-            <p class="capabilities">${capabilities}</p>
-        </div>
+        <p class="status" role="status">${status}</p>
+        <p class="capabilities">${capabilities}</p>
     </main>
     <script type="module" src="Content/WebSharper.WebCrypto.Sample.min.js"></script>
 </body>
