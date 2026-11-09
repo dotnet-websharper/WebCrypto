@@ -163,7 +163,7 @@ module Client =
 
     [<SPAEntryPoint>]
     let Main () =
-        IndexTemplate.Main()
+        IndexTemplate()
             .hashText(fun _ -> hashText() |> ignore)
             .randomValues(fun _ -> randomValues())
             .encryptText(fun _ -> encryptText() |> ignore)
@@ -177,5 +177,4 @@ module Client =
             .uuid(uuid.V)
             .status(statusMessage.V)
             .capabilities(capabilities)
-            .Doc()
-        |> Doc.RunById "main"
+            .Bind()
